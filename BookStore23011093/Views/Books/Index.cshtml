@@ -1,0 +1,112 @@
+﻿@using PagedList
+@using PagedList.Mvc
+@model BookStore23011093.ViewModels.BookIndexViewModel
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <link rel="stylesheet" href="~/Content/css/Site.css">
+    @Scripts.Render("~/Content/js")
+    @Styles.Render("~/Content/css")
+    @Scripts.Render("~/bundles/book")
+    @Scripts.Render("~/Scripts/book.js")
+    @Scripts.Render("~/bundles/modernizr")
+</head>
+
+@{
+    ViewBag.Title = "Index";
+}
+
+<h2>Index</h2>
+
+<div class="filter-bar">
+    
+    <div class="filter" >@using (Html.BeginForm("Index", "Books", FormMethod.Get))
+                            {
+                                <label>Filter by gerne:</label>
+                                @Html.DropDownListFor(vm => vm.Genre, new SelectList(Model.GenreFilterItems, "Value", "Text"), "All")
+                                
+                                <input type="submit" value="Filter"/>
+                                <input type="hidden" name="Search" id="Search" value="@Model.Search"/>
+                            } </div>
+    <div class="search-book"> @using (Html.BeginForm("Index", "Books", FormMethod.Get))
+                             {
+                                 <label>Search book:</label>
+                                 <input type="text" name="Search" id="Search" value="@Model.Search"/>
+                                 <input type="submit" value="Search"/>
+                             } </div>
+    <div class="link-full-list"> @Html.ActionLink("Back to Full List", "Index") </div>
+    <div class="create-new"> @Html.ActionLink("Create New", "Create") </div>
+</div>
+<table class="table">
+    <tr>
+        <th>
+            @Html.ActionLink("Genre", "Index", new { sortOrder = ViewBag.GenreSortParm }) 
+            
+        </th>
+        <th>
+            @Html.ActionLink("Book Title", "Index", new { sortOrder = ViewBag.NameSortParm }) 
+            @* @Html.DisplayNameFor(model => model.Books.First().Title) *@
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Books.First().Description)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Books.First().Language)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Books.First().ISBN)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Books.First().DatePublished)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Books.First().Price)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Books.First().Author)
+        </th>
+        <th></th>
+    </tr>
+
+@foreach (var item in Model.Books) 
+{
+    <tr>
+        <td>
+            @Html.DisplayFor(modelItem => item.Genre.Name)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.Title)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.Description)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.Language)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.ISBN)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.DatePublished)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.Price)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.Author)
+        </td>
+        <td>
+            @Html.ActionLink("Edit", "Edit", new { id=item.ID }, new { onclick = "return confirmEditing();"}) |
+            @Html.ActionLink("Details", "Details", new { id=item.ID }) |
+            @Html.ActionLink("Delete", "Delete", new { id=item.ID }, new { onclick = "return confirmDeleting();"})
+        </td>
+    </tr>
+}
+
+</table>
+
+Page @(Model.PageCount < Model.PageNumber ? 0 : Model.PageNumber) of @Model.PageCount
+
+@Html.PagedListPager(Model.Books, page => Url.Action("Index",
+    new { page, sortOrder = ViewBag.CurrentSort, currentFilter = ViewBag.CurrentFilter }))
